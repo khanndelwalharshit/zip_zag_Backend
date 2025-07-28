@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  catalogs    Catalog[]  @relation("CatalogProducts")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Customer {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  phone     String?
+  catalogs  Catalog[]
+  inquiries Inquiry[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Catalog {
+  id         Int        @id @default(autoincrement())
+  name       String
+  customerId Int
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  products   Product[]  @relation("CatalogProducts")
+  inquiries  Inquiry[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Inquiry {
+  id         Int      @id @default(autoincrement())
+  message    String
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+  catalogId  Int?
+  catalog    Catalog? @relation(fields: [catalogId], references: [id])
+  status     String   @default("pending") // pending, responded, closed
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
