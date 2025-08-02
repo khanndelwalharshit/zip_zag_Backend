@@ -21,21 +21,35 @@ export const getCatalogByIdService = async (id: number) => {
   })
 }
 
-export const createCatalogService = async (data: { name: string; customerId: number }) => {
+export const createCatalogService = async (data: { name: string; customerId: number; hasPassword?: boolean; password?: string; status?: string, productIds?: number[] }) => {
+  const { productIds, ...catalogData } = data;
   return await prisma.catalog.create({
-    data,
+    data: {
+      ...catalogData,
+      products: {
+        connect: productIds?.map(id => ({ id })) || []
+      }
+    },
     include: {
-      customer: true
+      customer: true,
+      products: true
     }
   })
 }
 
-export const updateCatalogService = async (id: number, data: { name?: string; customerId?: number }) => {
+export const updateCatalogService = async (id: number, data: { name?: string; customerId?: number; hasPassword?: boolean; password?: string; status?: string; productIds?: number[] }) => {
+  const { productIds, ...rest } = data;
   return await prisma.catalog.update({
     where: { id },
-    data,
+    data: {
+      ...rest,
+      products: {
+        set: productIds?.map(id => ({ id })) || []
+      }
+    },
     include: {
-      customer: true
+      customer: true,
+      products: true
     }
   })
 }

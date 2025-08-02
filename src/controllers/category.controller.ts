@@ -6,7 +6,8 @@ export const getAllCategories = async (req: Request, res: Response) => {
     const categories = await getAllCategoriesService()
     res.json({ success: true, data: categories })
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to fetch categories' })
+    console.error('Error in getAllCategories:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch categories' });
   }
 }
 
@@ -25,12 +26,21 @@ export const getCategoryById = async (req: Request, res: Response) => {
 
 export const createCategory = async (req: Request, res: Response) => {
   try {
-    const category = await createCategoryService(req.body)
-    res.status(201).json({ success: true, data: category })
+    const { name, description, active = true, parentId } = req.body;
+
+    const category = await createCategoryService({
+      name,
+      description,
+      active,
+      parentId: parentId ? Number(parentId) : null,
+    });
+
+    res.status(201).json({ success: true, data: category });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to create category' })
+    res.status(500).json({ success: false, error: 'Failed to create category' });
   }
-}
+};
+
 
 export const updateCategory = async (req: Request, res: Response) => {
   try {

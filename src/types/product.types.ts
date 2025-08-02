@@ -1,14 +1,18 @@
 export interface CreateProductData {
     name: string
+    shortDescription?: string
     description?: string
-    price: number
+    basePrice: number
     categoryId: number
   }
   
   export interface UpdateProductData {
     name?: string
+    shortDescription?: string
     description?: string
-    price?: number
+    basePrice?: number
+    offerPercentage?: number
+    active?: boolean
     categoryId?: number
   }
   

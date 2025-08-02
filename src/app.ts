@@ -8,18 +8,26 @@ import productRoutes from './routes/product.routes'
 import categoryRoutes from './routes/category.routes'
 import catalogRoutes from './routes/catalog.routes'
 import inquiryRoutes from './routes/inquiry.routes'
+import customerRoutes from './routes/customer.routes'
 
 // Import middlewares
 import errorMiddleware from './middlewares/error.middleware'
 
 const app = express()
 
+// CORS configuration - IMPORTANT!
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:8080'], // Add your frontend URLs
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
 // Middleware
-app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// Root API route (should be first)
+// Root API route
 app.get('/api', (req, res) => {
   res.json({
     success: true,
@@ -47,8 +55,9 @@ app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/catalogs', catalogRoutes)
 app.use('/api/inquiries', inquiryRoutes)
+app.use('/api/customers', customerRoutes)
 
-// Error handling middleware (should be last)
+// Error handling middleware
 app.use(errorMiddleware)
 
 export default app

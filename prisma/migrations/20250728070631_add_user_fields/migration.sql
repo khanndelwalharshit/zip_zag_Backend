@@ -1,0 +1,4 @@
+ALTER TABLE `User`
+  ADD COLUMN `phone` VARCHAR(191) NOT NULL AFTER `name`,
+  ADD COLUMN `password` VARCHAR(191) NOT NULL AFTER `role`,
+  ADD COLUMN `active` BOOLEAN NOT NULL DEFAULT true AFTER `password`;

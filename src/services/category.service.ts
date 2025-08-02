@@ -1,12 +1,35 @@
 import prisma from '../models/db'
 
+const getCategoryLevel = async (categoryId: number | null): Promise<number> => {
+  if (!categoryId) {
+    return 0;
+  }
+  const parent = await prisma.category.findUnique({ where: { id: categoryId } });
+  if (!parent || !parent.parentId) {
+    return 1;
+  }
+  return 1 + (await getCategoryLevel(parent.parentId));
+};
+
 export const getAllCategoriesService = async () => {
-  return await prisma.category.findMany({
+  const categories = await prisma.category.findMany({
     include: {
-      products: true
-    }
-  })
-}
+      products: true,
+      children: true,
+    },
+  });
+
+  const categoriesWithLevels = await Promise.all(
+    categories.map(async (category) => ({
+      ...category,
+      level: await getCategoryLevel(category.id),
+      subcategories: category.children.length,
+      products: category.products.length,
+    }))
+  );
+
+  return categoriesWithLevels;
+};
 
 export const getCategoryByIdService = async (id: number) => {
   return await prisma.category.findUnique({
@@ -17,13 +40,18 @@ export const getCategoryByIdService = async (id: number) => {
   })
 }
 
-export const createCategoryService = async (data: { name: string }) => {
+export const createCategoryService = async (data: {
+  name: string;
+  description?: string;
+  active?: boolean;
+  parentId?: number | null;
+}) => {
   return await prisma.category.create({
-    data
-  })
-}
+    data,
+  });
+};
 
-export const updateCategoryService = async (id: number, data: { name?: string }) => {
+export const updateCategoryService = async (id: number, data: { name?: string; description?: string; active?: boolean; status?: string; parentId?: number | null; }) => {
   return await prisma.category.update({
     where: { id },
     data

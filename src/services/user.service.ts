@@ -22,12 +22,18 @@ export const createUserService = async (data: CreateUserData) => {
   }
 }
 
+import { validatePhone } from '../utils/validation';
+
 export const updateUserService = async (id: number, data: UpdateUserData) => {
+  if (data.phone && !validatePhone(data.phone)) {
+    throw new Error('Invalid phone number format. Please use a 10-digit number.');
+  }
+
   return await prisma.user.update({
     where: { id },
     data
-  })
-}
+  });
+};
 
 export const deleteUserService = async (id: number) => {
   return await prisma.user.delete({

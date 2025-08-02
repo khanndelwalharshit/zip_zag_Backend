@@ -25,10 +25,14 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
+    const { role } = req.body;
+    if (role && role !== 'super-admin' && role !== 'sub-admin') {
+      return res.status(400).json({ success: false, error: 'Invalid role. Must be "super-admin" or "sub-admin".' });
+    }
     const user = await createUserService(req.body)
     res.status(201).json({ success: true, data: user })
   } catch (error) {
-    console.error('Create user error:', error) // Add this line
+    console.error('Create user error:', error)
     res.status(500).json({ 
       success: false, 
       error: 'Failed to create user',

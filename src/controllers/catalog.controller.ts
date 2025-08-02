@@ -41,7 +41,8 @@ export const updateCatalog = async (req: Request, res: Response) => {
     }
     res.json({ success: true, data: catalog })
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to update catalog' })
+    console.error('Error in updateCatalog:', error);
+    res.status(500).json({ success: false, error: 'Failed to update catalog' });
   }
 }
 
@@ -54,6 +55,7 @@ export const deleteCatalog = async (req: Request, res: Response) => {
     }
     res.json({ success: true, message: 'Catalog deleted successfully' })
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to delete catalog' })
+    console.error('Error in deleteCatalog:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete catalog' });
   }
 }

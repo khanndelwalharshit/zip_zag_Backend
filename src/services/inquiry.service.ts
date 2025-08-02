@@ -19,7 +19,7 @@ export const getInquiryByIdService = async (id: number) => {
   })
 }
 
-export const createInquiryService = async (data: { message: string; customerId: number; catalogId?: number }) => {
+export const createInquiryService = async (data: { message: string; customerId: number; catalogId?: number; productName?: string; priority?: string }) => {
   return await prisma.inquiry.create({
     data,
     include: {
@@ -29,7 +29,7 @@ export const createInquiryService = async (data: { message: string; customerId: 
   })
 }
 
-export const updateInquiryService = async (id: number, data: { message?: string; status?: string; catalogId?: number }) => {
+export const updateInquiryService = async (id: number, data: { message?: string; status?: string; catalogId?: number; productName?: string; priority?: string }) => {
   return await prisma.inquiry.update({
     where: { id },
     data,

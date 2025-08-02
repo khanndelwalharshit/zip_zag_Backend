@@ -14,61 +14,83 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String
+  phone     String
   role      String   @default("admin")
+  password  String
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  active      Boolean   @default(true)
+  status      String    @default("active") // active, inactive
+  parentId    Int?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Product {
-  id          Int        @id @default(autoincrement())
-  name        String
-  description String?
-  price       Float
-  categoryId  Int
-  category    Category   @relation(fields: [categoryId], references: [id])
-  catalogs    Catalog[]  @relation("CatalogProducts")
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id               Int       @id @default(autoincrement())
+  name             String
+  shortDescription String?   @db.VarChar(100)
+  description      String?
+  price            Float
+  offerPercentage  Float     @default(0)
+  active           Boolean   @default(true)
+  categoryId       Int
+  category         Category  @relation(fields: [categoryId], references: [id])
+  catalogs         Catalog[] @relation("CatalogProducts")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model Customer {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  phone     String?
-  catalogs  Catalog[]
-  inquiries Inquiry[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  phone        String?
+  region       String?
+  status       String    @default("active") // active, inactive
+  lastLogin    DateTime?
+  joinedDate   DateTime  @default(now())
+  catalogs     Catalog[]
+  inquiries    Inquiry[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Catalog {
-  id         Int        @id @default(autoincrement())
-  name       String
-  customerId Int
-  customer   Customer   @relation(fields: [customerId], references: [id])
-  products   Product[]  @relation("CatalogProducts")
-  inquiries  Inquiry[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String
+  customerId  Int
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  products    Product[] @relation("CatalogProducts")
+  inquiries   Inquiry[]
+  hasPassword Boolean   @default(false)
+  password    String?
+  status      String    @default("active") // active, inactive
+  views       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Inquiry {
-  id         Int      @id @default(autoincrement())
-  message    String
-  customerId Int
-  customer   Customer @relation(fields: [customerId], references: [id])
-  catalogId  Int?
-  catalog    Catalog? @relation(fields: [catalogId], references: [id])
-  status     String   @default("pending") // pending, responded, closed
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  message     String
+  customerId  Int
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  catalogId   Int?
+  catalog     Catalog?  @relation(fields: [catalogId], references: [id])
+  productName String?
+  priority    String    @default("medium") // high, medium, low
+  status      String    @default("pending") // pending, responded, closed
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
